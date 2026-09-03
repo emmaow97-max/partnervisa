@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdf6f0;
+  --background-alt: #ffffff;
+  --foreground: #3f2e2e;
+  --muted: #8a7268;
+
+  --blush: #e8a1b0;
+  --blush-dark: #d4738a;
+  --terracotta: #c97b5a;
+  --sage: #8ba888;
+  --sage-dark: #5f7d5c;
+  --gold: #e0b563;
+  --cream: #fbeee3;
+  --line: #ecdcd0;
+
+  /* evidence category colors */
+  --cat-financial: #5f8d7b;
+  --cat-household: #c97b5a;
+  --cat-social: #d4738a;
+  --cat-commitment: #a06bb3;
+  --cat-memory: #d8ab3f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-alt: var(--background-alt);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-blush: var(--blush);
+  --color-blush-dark: var(--blush-dark);
+  --color-terracotta: var(--terracotta);
+  --color-sage: var(--sage);
+  --color-sage-dark: var(--sage-dark);
+  --color-gold: var(--gold);
+  --color-cream: var(--cream);
+  --color-line: var(--line);
+  --color-cat-financial: var(--cat-financial);
+  --color-cat-household: var(--cat-household);
+  --color-cat-social: var(--cat-social);
+  --color-cat-commitment: var(--cat-commitment);
+  --color-cat-memory: var(--cat-memory);
+  --font-heading: var(--font-fraunces);
+  --font-sans: var(--font-nunito);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-nunito), Arial, Helvetica, sans-serif;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(232, 161, 176, 0.12), transparent 38%),
+    radial-gradient(circle at 88% 92%, rgba(139, 168, 136, 0.12), transparent 40%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+::selection {
+  background: var(--blush);
+  color: white;
+}
