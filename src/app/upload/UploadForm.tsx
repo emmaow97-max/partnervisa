@@ -6,12 +6,22 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, KINDS, type Category, type Kind } from "@/lib/categories";
 import { Button } from "@/components/ui";
 
+function isHeic(file: File) {
+  const type = file.type.toLowerCase();
+  return (
+    type === "image/heic" ||
+    type === "image/heif" ||
+    /\.hei[cf]$/i.test(file.name)
+  );
+}
+
 export function UploadForm() {
   const router = useRouter();
   const [kind, setKind] = useState<Kind>("photo");
   const [category, setCategory] = useState<Category>("social");
   const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [stage, setStage] = useState<"idle" | "converting" | "saving">("idle");
+  const submitting = stage !== "idle";
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,7 +37,7 @@ export function UploadForm() {
     if (!title) return setError("Give it a title.");
     if (kind === "note" && !description) return setError("Write your note first.");
 
-    setSubmitting(true);
+    setStage("saving");
     try {
       const supabase = createClient();
       const {
@@ -47,18 +57,38 @@ export function UploadForm() {
           setError("Choose a file to upload.");
           return;
         }
-        const ext = file.name.includes(".") ? file.name.split(".").pop() : "";
+
+        let uploadFile: File | Blob = file;
+        let uploadName = file.name;
+
+        if (kind === "photo" && isHeic(file)) {
+          setStage("converting");
+          try {
+            const heic2any = (await import("heic2any")).default;
+            const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
+            uploadFile = Array.isArray(converted) ? converted[0] : converted;
+            uploadName = file.name.replace(/\.\w+$/, "") + ".jpg";
+          } catch {
+            setError(
+              "This iPhone photo (HEIC) couldn't be converted — try sharing it as a JPEG from your Photos app first."
+            );
+            return;
+          }
+          setStage("saving");
+        }
+
+        const ext = uploadName.includes(".") ? uploadName.split(".").pop() : "";
         const path = `${user.id}/${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
         const { error: uploadError } = await supabase.storage
           .from("evidence")
-          .upload(path, file, { contentType: file.type || undefined });
+          .upload(path, uploadFile, { contentType: uploadFile.type || undefined });
         if (uploadError) {
           setError(uploadError.message);
           return;
         }
         filePath = path;
-        fileMime = file.type || null;
-        fileName = file.name;
+        fileMime = uploadFile.type || null;
+        fileName = uploadName;
       }
 
       const { error: insertError } = await supabase.from("evidence").insert({
@@ -80,7 +110,7 @@ export function UploadForm() {
       router.push("/?added=1");
       router.refresh();
     } finally {
-      setSubmitting(false);
+      setStage("idle");
     }
   }
 
@@ -190,7 +220,11 @@ export function UploadForm() {
       )}
 
       <Button type="submit" disabled={submitting} className="self-start">
-        {submitting ? "Saving…" : "Save to our archive"}
+        {stage === "converting"
+          ? "Converting photo…"
+          : stage === "saving"
+            ? "Saving…"
+            : "Save to our archive"}
       </Button>
     </form>
   );
