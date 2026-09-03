@@ -1,19 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, KINDS, type Category, type Kind } from "@/lib/categories";
-import { uploadEvidence } from "./actions";
 import { Button } from "@/components/ui";
 
-export function UploadForm({ error }: { error?: string }) {
+export function UploadForm() {
+  const router = useRouter();
   const [kind, setKind] = useState<Kind>("photo");
   const [category, setCategory] = useState<Category>("social");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const title = String(formData.get("title") ?? "").trim();
+    const description = String(formData.get("description") ?? "").trim();
+    const eventDate =
+      String(formData.get("event_date") ?? "") || new Date().toISOString().slice(0, 10);
+    const file = formData.get("file");
+
+    if (!title) return setError("Give it a title.");
+    if (kind === "note" && !description) return setError("Write your note first.");
+
+    setSubmitting(true);
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      let filePath: string | null = null;
+      let fileMime: string | null = null;
+      let fileName: string | null = null;
+
+      if (kind !== "note") {
+        if (!(file instanceof File) || file.size === 0) {
+          setError("Choose a file to upload.");
+          return;
+        }
+        const ext = file.name.includes(".") ? file.name.split(".").pop() : "";
+        const path = `${user.id}/${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
+        const { error: uploadError } = await supabase.storage
+          .from("evidence")
+          .upload(path, file, { contentType: file.type || undefined });
+        if (uploadError) {
+          setError(uploadError.message);
+          return;
+        }
+        filePath = path;
+        fileMime = file.type || null;
+        fileName = file.name;
+      }
+
+      const { error: insertError } = await supabase.from("evidence").insert({
+        uploader_id: user.id,
+        category,
+        kind,
+        title,
+        description,
+        file_path: filePath,
+        file_mime: fileMime,
+        file_name: fileName,
+        event_date: eventDate,
+      });
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+
+      router.push("/?added=1");
+      router.refresh();
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
-    <form action={uploadEvidence} className="flex flex-col gap-6">
-      <input type="hidden" name="kind" value={kind} />
-      <input type="hidden" name="category" value={category} />
-
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div>
         <span className="mb-2 block text-sm font-medium text-foreground/80">What is it?</span>
         <div className="flex flex-wrap gap-2">
@@ -117,8 +189,8 @@ export function UploadForm({ error }: { error?: string }) {
         <p className="rounded-xl bg-blush/10 px-3 py-2 text-sm text-blush-dark">{error}</p>
       )}
 
-      <Button type="submit" className="self-start">
-        Save to our archive
+      <Button type="submit" disabled={submitting} className="self-start">
+        {submitting ? "Saving…" : "Save to our archive"}
       </Button>
     </form>
   );
