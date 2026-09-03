@@ -1,26 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fdf6f0;
+  --background: #f5f6fa;
   --background-alt: #ffffff;
-  --foreground: #3f2e2e;
-  --muted: #8a7268;
+  --foreground: #20232b;
+  --muted: #5c6670;
 
-  --blush: #e8a1b0;
-  --blush-dark: #d4738a;
-  --terracotta: #c97b5a;
-  --sage: #8ba888;
-  --sage-dark: #5f7d5c;
-  --gold: #e0b563;
-  --cream: #fbeee3;
-  --line: #ecdcd0;
+  /* primary — dark green */
+  --blush: #2f6f4f;
+  --blush-dark: #1f4d37;
+  /* accent — purple */
+  --terracotta: #5b3a86;
+  /* secondary — dark blue */
+  --sage: #3a6ea5;
+  --sage-dark: #1f3a5f;
+  /* accent — bright purple */
+  --gold: #7c4dbd;
+  --cream: #eef0f6;
+  --line: #dadfe6;
 
   /* evidence category colors */
-  --cat-financial: #5f8d7b;
-  --cat-household: #c97b5a;
-  --cat-social: #d4738a;
-  --cat-commitment: #a06bb3;
-  --cat-memory: #d8ab3f;
+  --cat-financial: #1f6f4c;
+  --cat-household: #2f5aa8;
+  --cat-social: #7c4dbd;
+  --cat-commitment: #4b2e6b;
+  --cat-memory: #2f7a7a;
 }
 
 @theme inline {
@@ -50,8 +54,9 @@ body {
   color: var(--foreground);
   font-family: var(--font-nunito), Arial, Helvetica, sans-serif;
   background-image:
-    radial-gradient(circle at 12% 8%, rgba(232, 161, 176, 0.12), transparent 38%),
-    radial-gradient(circle at 88% 92%, rgba(139, 168, 136, 0.12), transparent 40%);
+    radial-gradient(circle at 12% 8%, rgba(31, 77, 55, 0.12), transparent 38%),
+    radial-gradient(circle at 88% 92%, rgba(58, 110, 165, 0.12), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(91, 58, 134, 0.05), transparent 60%);
   background-attachment: fixed;
 }
 

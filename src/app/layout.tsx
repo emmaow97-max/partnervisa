@@ -16,7 +16,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Our Evidence Box",
+  title: "Proof of Us",
   description: "A private archive of our life together — and our partner visa evidence.",
 };
 

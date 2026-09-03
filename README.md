@@ -1,4 +1,4 @@
-# Our Evidence Box 💌
+# Proof of Us 💌
 
 A private, just-the-two-of-you website for gathering Australian partner visa evidence —
 and, since you're building the archive anyway, a bit of a time capsule of your relationship

@@ -13,7 +13,7 @@ export default async function LoginPage({
         <div className="mb-8 text-center">
           <div className="mb-3 text-4xl">💌</div>
           <h1 className="font-heading text-3xl font-semibold text-blush-dark">
-            Our Evidence Box
+            Proof of Us
           </h1>
           <p className="mt-2 text-sm text-muted">
             A private space, just for the two of you.

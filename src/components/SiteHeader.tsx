@@ -29,7 +29,7 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-30 border-b border-line bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5">
         <Link href="/" className="font-heading text-xl font-semibold text-blush-dark">
-          Our Evidence Box
+          Proof of Us
         </Link>
 
         {user && (
