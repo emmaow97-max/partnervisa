@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   fileLink: {
     fontSize: 10,
-    color: "#c97b5a",
+    color: "#5b3a86",
     marginTop: 8,
   },
   footer: {

@@ -1,4 +1,4 @@
--- Our Evidence Box — database schema
+-- Proof of Us — database schema
 -- Run this once in your Supabase project's SQL editor (Dashboard -> SQL Editor -> New query).
 -- Safe to re-run: uses "if not exists" / "or replace" where possible.
 
