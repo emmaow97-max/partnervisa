@@ -1,13 +1,7 @@
 import { Card } from "@/components/ui";
 import { UploadForm } from "./UploadForm";
 
-export default async function UploadPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
-  const params = await searchParams;
-
+export default function UploadPage() {
   return (
     <div className="mx-auto max-w-xl px-5 py-10">
       <h1 className="font-heading text-2xl font-semibold">Add to the archive</h1>
@@ -16,7 +10,7 @@ export default async function UploadPage({
       </p>
 
       <Card className="mt-6 p-6">
-        <UploadForm error={params.error} />
+        <UploadForm />
       </Card>
     </div>
   );
