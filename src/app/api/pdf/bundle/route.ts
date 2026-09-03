@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { getSignedFileUrl } from "@/lib/data/evidence";
+import { preparePdfImage } from "@/lib/pdf/prepareImage";
 import { EvidenceDocument } from "@/lib/pdf/EvidenceDocument";
 import { createClient } from "@/lib/supabase/server";
 import type { Evidence } from "@/lib/types";
+
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -29,14 +32,16 @@ export async function GET(request: NextRequest) {
   const items = await Promise.all(
     ordered.map(async (item) => ({
       item,
-      imageUrl: item.file_path ? await getSignedFileUrl(item.file_path) : null,
+      fileUrl: item.file_path ? await getSignedFileUrl(item.file_path) : null,
+      imageBuffer:
+        item.kind === "photo" && item.file_path ? await preparePdfImage(item.file_path) : null,
     }))
   );
 
   const buffer = await renderToBuffer(
     EvidenceDocument({
       items,
-      title: "Our Relationship Evidence",
+      title: "Proof of Us — Evidence",
       subtitle: `${items.length} items · compiled ${format(new Date(), "d MMMM yyyy")}`,
     })
   );

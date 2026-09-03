@@ -20,7 +20,7 @@ export default async function ExportPage() {
       ) : (
         <form action="/api/pdf/bundle" method="GET" className="mt-6 flex flex-col gap-6">
           <div className="flex flex-wrap gap-2 text-xs text-muted">
-            <SelectAllCheckbox />
+            <SelectAllCheckbox label="Select everything" />
           </div>
 
           {CATEGORIES.map((cat) => {
@@ -35,6 +35,9 @@ export default async function ExportPage() {
                   />
                   <h2 className="font-heading text-base font-semibold">{cat.label}</h2>
                   <span className="text-xs text-muted">({items.length})</span>
+                  <div className="ml-auto">
+                    <SelectAllCheckbox category={cat.value} />
+                  </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   {items.map((item) => (
@@ -46,6 +49,7 @@ export default async function ExportPage() {
                         type="checkbox"
                         name="ids"
                         value={item.id}
+                        data-category={cat.value}
                         className="bundle-checkbox accent-[var(--blush-dark)]"
                       />
                       <span className="flex-1">{item.title}</span>

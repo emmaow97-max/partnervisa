@@ -77,6 +77,14 @@ const styles = StyleSheet.create({
     color: "#5b3a86",
     marginTop: 8,
   },
+  imageMissing: {
+    marginTop: 6,
+    padding: 10,
+    fontSize: 9,
+    color: "#8a7268",
+    backgroundColor: "#f2efe9",
+    borderRadius: 4,
+  },
   footer: {
     position: "absolute",
     bottom: 24,
@@ -88,7 +96,15 @@ const styles = StyleSheet.create({
   },
 });
 
-function ItemPage({ item, imageUrl }: { item: Evidence; imageUrl?: string | null }) {
+function ItemPage({
+  item,
+  fileUrl,
+  imageBuffer,
+}: {
+  item: Evidence;
+  fileUrl?: string | null;
+  imageBuffer?: Buffer | null;
+}) {
   const cat = CATEGORY_MAP[item.category];
   return (
     <Page size="A4" style={styles.page}>
@@ -99,11 +115,17 @@ function ItemPage({ item, imageUrl }: { item: Evidence; imageUrl?: string | null
       </Text>
       <Text style={styles.itemTitle}>{item.title}</Text>
       {item.description ? <Text style={styles.description}>{item.description}</Text> : null}
-      {item.kind === "photo" && imageUrl ? (
-        <Image src={imageUrl} style={styles.image} />
+      {item.kind === "photo" && imageBuffer ? (
+        <Image src={{ data: imageBuffer, format: "jpg" }} style={styles.image} />
       ) : null}
-      {item.kind === "document" && imageUrl ? (
-        <Link src={imageUrl} style={styles.fileLink}>
+      {item.kind === "photo" && !imageBuffer && item.file_path ? (
+        <Text style={styles.imageMissing}>
+          This photo couldn&apos;t be included in the PDF (its file format isn&apos;t supported)
+          — view it in the app instead.
+        </Text>
+      ) : null}
+      {item.kind === "document" && fileUrl ? (
+        <Link src={fileUrl} style={styles.fileLink}>
           Open original document: {item.file_name ?? "file"}
         </Link>
       ) : null}
@@ -121,7 +143,7 @@ export function EvidenceDocument({
   title,
   subtitle,
 }: {
-  items: { item: Evidence; imageUrl?: string | null }[];
+  items: { item: Evidence; fileUrl?: string | null; imageBuffer?: Buffer | null }[];
   title: string;
   subtitle?: string;
 }) {
@@ -145,8 +167,8 @@ export function EvidenceDocument({
           ))}
         </Page>
       )}
-      {items.map(({ item, imageUrl }) => (
-        <ItemPage key={item.id} item={item} imageUrl={imageUrl} />
+      {items.map(({ item, fileUrl, imageBuffer }) => (
+        <ItemPage key={item.id} item={item} fileUrl={fileUrl} imageBuffer={imageBuffer} />
       ))}
     </Document>
   );
